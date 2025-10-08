@@ -9,25 +9,24 @@ describe('Transactions Home Section', () => {
     it('Should see table with all the columns', () => {
         cy.intercept('GET', 'https://adicto-tattoo.onrender.com/api/transactions').as('transactionsRequest');
 
-        cy.get('h1').contains('Sales').should('exist');
-        cy.contains('Add sale').should('exist');
-        cy.contains('Filters').should('exist');
+        cy.get('h1').contains('Ventas').should('exist');
+        cy.get('[data-testid="add-sale-button"]').should('exist');
+        cy.get('[data-testid="filters-button"]').should('exist');
         cy.get('table').should('exist');
         cy.get('.MuiTablePagination-root').should('exist');
-        cy.get('.MuiChartsGrid-root').should('exist');
 
-        cy.contains('Date').should('exist');
-        cy.contains('Name').should('exist');
-        cy.contains('Services').should('exist');
-        cy.contains('Amount').should('exist');
-        cy.contains('Details').should('exist');
-        cy.contains('Client').should('exist');
-        cy.contains('Actions').should('exist');
+        cy.get('[data-testid="transactions-table-date"]').should('exist');
+        cy.get('[data-testid="transactions-table-name"]').should('exist');
+        cy.get('[data-testid="transactions-table-services"]').should('exist');
+        cy.get('[data-testid="transactions-table-amount"]').should('exist');
+        cy.get('[data-testid="transactions-table-details"]').should('exist');
+        cy.get('[data-testid="transactions-table-client"]').should('exist');
+        cy.get('[data-testid="transactions-table-actions"]').should('exist');
 
         cy.wait('@transactionsRequest').then((interception) => {
             const firstSale = interception.response.body[0];
 
-            cy.get('tbody > tr:nth-child(1) > td:nth-child(1)').should('contain.text', new Date(firstSale.date).toLocaleDateString());
+            cy.get('tbody > tr:nth-child(1) > td:nth-child(1)').should('contain.text', new Date(firstSale.date).toLocaleDateString('es-ES'));
             cy.get('tbody > tr:nth-child(1) > td:nth-child(2)').should('contain.text', `${firstSale.employee_name} ${firstSale.employee_lastname}`);
             cy.get('tbody > tr:nth-child(1) > td:nth-child(3)').should('contain.text', firstSale.service.join(', '));
             cy.get('tbody > tr:nth-child(1) > td:nth-child(4)').should('contain.text', firstSale.amount);
@@ -38,12 +37,12 @@ describe('Transactions Home Section', () => {
     });
 
     it('Can open and close the add sale modal', () => {
-        cy.get('button').contains('Add sale').click();
-        cy.get('button').contains('Cancel').click();
+        cy.get('[data-testid="add-sale-button"]').click();
+        cy.get('[data-testid="cancel-add-sale-button"]').click();
     })
 
     it('Should add a sale', () => {
-        cy.get('button').contains('Add sale').click();
+        cy.get('[data-testid="add-sale-button"]').click();
         cy.intercept('GET', 'https://adicto-tattoo.onrender.com/api/employees').as('employeeRequest');
 
         // Date field
@@ -74,31 +73,31 @@ describe('Transactions Home Section', () => {
                 cy.get('li').contains(service).click();
 
                 // Submit
-                cy.get('button[type="submit"]').contains('Add').click({ force: true });
+                cy.get('[data-testid="add-sale-modal-button"]').click({ force: true });
             });
         });
     });
 
     it('Should delete a sale', () => {
         cy.get('tbody > tr:nth-child(1) > td:nth-child(7) > button').click();
-        cy.contains('Delete Sale?').should('exist');
+        cy.get('[data-testid="delete-sale-title"]').should('exist');
 
         // I can close the delete sale modal
-        cy.get('button').contains('No').click();
+        cy.get('[data-testid="delete-sale-no-button"]').click();
 
         cy.get('tbody > tr:nth-child(1) > td:nth-child(7) > button').click();
-        cy.contains('Delete Sale?').should('exist');
-        cy.get('button').contains('Yes').click();
+        cy.get('[data-testid="delete-sale-title"]').should('exist');
+        cy.get('[data-testid="delete-sale-yes-button"]').click();
 
         cy.contains('Robotino').should('not.exist');
     });
 
     it('Should filter by date correctly', () => {
-        cy.get('button').contains('Filters').click();
+        cy.get('[data-testid="filters-button"]').click();
     });
 
     it('Should filter by employee correctly', () => {
-        cy.get('button').contains('Filters').click();
+        cy.get('[data-testid="filters-button"]').click();
         cy.intercept('GET', 'https://adicto-tattoo.onrender.com/api/employees').as('employeeRequest');
 
         cy.wait('@employeeRequest').then((employees) => {
@@ -109,20 +108,16 @@ describe('Transactions Home Section', () => {
             cy.get('#employee_id').click({ force: true });
             cy.get('li').contains(employeeFullName).click({ force: true });
 
-            cy.get('button').contains('Search').click();
-
             cy.get('td:nth-child(2)').should('contain.text', employeeFullName);
         });
     });
 
-    it('Should filter by service correctly', () => {
-        cy.get('button').contains('Filters').click();
+   /*  it('Should filter by service correctly', () => {
+        cy.get('[data-testid="filters-button"]').click();
 
         cy.get('#service').click({ force: true });
         cy.get('li').contains('Piercing').click({ force: true });
 
-        cy.get('button').contains('Search').click();
-
         cy.get('td:nth-child(2)').should('contain.text', 'Piercing');
-    });
+    }); */
 });

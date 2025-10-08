@@ -16,7 +16,7 @@ describe('Login Flow', () => {
         // show/hide password button
         cy.get('.MuiIconButton-root').should('be.visible');
         cy.get('button[type="submit"]').should('be.visible').and('be.visible');
-        cy.contains('Enter as a guest').should('be.visible').and('be.visible');
+        cy.get('[data-testid="enter-as-a-guest"]').should('be.visible').and('be.visible');
     });
 
     it('Should show/hide password when clicking button', () => {
@@ -41,7 +41,7 @@ describe('Login Flow', () => {
 
     it('Logs in as a guest', () => {
         cy.intercept('POST', apiUrl).as('loginRequest');
-        cy.get('button').contains('Enter as a guest').click();
+        cy.get('[data-testid="enter-as-a-guest"]').click();
         cy.get('button[type="submit"]').should('be.disabled');
         cy.wait('@loginRequest');
         cy.url().should('include', '/home');
@@ -56,6 +56,6 @@ describe('Login Flow', () => {
         cy.get('button[type="submit"]').should('be.disabled');
         cy.wait('@loginRequest');
         
-        cy.contains('Invalid username or password').should('be.visible');
+        cy.get('[data-testid="error-message"]').should('be.visible');
     });
 });

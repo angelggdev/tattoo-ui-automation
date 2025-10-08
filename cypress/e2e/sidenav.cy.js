@@ -7,15 +7,15 @@ describe('SideNav', () => {
     });
 
     it('Sidenav renders all items', () => {
-        cy.get('.sidenav').trigger('mouseover');
-        cy.contains('Sales').should('be.visible');
-        cy.contains('Employees').should('be.visible');
-        cy.contains('Logout').should('be.visible');
+        cy.get('[data-testid="sidenav"]').trigger('mouseover');
+        cy.get('[data-testid="sidenav-sales"]').should('be.visible');
+        cy.get('[data-testid="sidenav-employees"]').should('be.visible');
+        cy.get('[data-testid="sidenav-logout"]').should('be.visible');
     });
 
     it('Logs out when clicking Logout item in sidenav', () => {
-        cy.get('.sidenav').trigger('mouseover');
-        cy.contains('Logout').click();
+        cy.get('[data-testid="sidenav"]').trigger('mouseover');
+        cy.get('[data-testid="sidenav-logout"]').click();
         cy.url().should('include', '/auth/login');
     })
 });
