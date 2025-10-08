@@ -1,5 +1,7 @@
 import user from '../fixtures/user.json';
 
+const apiUrl = 'https://adicto-tattoo.onrender.com/api/auth/login';
+
 describe('Login Flow', () => {
     beforeEach(() => {
         cy.visit('https://tattoo-ui-three.vercel.app/auth/login');
@@ -29,7 +31,7 @@ describe('Login Flow', () => {
         cy.get('#username').type(user.username);
         cy.get('#password').type(user.password);
 
-        cy.intercept('POST', 'https://adicto-tattoo.onrender.com/api/auth/login').as('loginRequest');
+        cy.intercept('POST', apiUrl).as('loginRequest');
         cy.get('button[type="submit"]').click();
         cy.get('button[type="submit"]').should('be.disabled');
         cy.wait('@loginRequest');
@@ -38,7 +40,7 @@ describe('Login Flow', () => {
     });
 
     it('Logs in as a guest', () => {
-        cy.intercept('POST', 'https://adicto-tattoo.onrender.com/api/auth/login').as('loginRequest');
+        cy.intercept('POST', apiUrl).as('loginRequest');
         cy.get('button').contains('Enter as a guest').click();
         cy.get('button[type="submit"]').should('be.disabled');
         cy.wait('@loginRequest');
@@ -49,7 +51,7 @@ describe('Login Flow', () => {
         cy.get('#username').type('fake');
         cy.get('#password').type('123');
 
-        cy.intercept('POST', 'https://adicto-tattoo.onrender.com/api/auth/login').as('loginRequest');
+        cy.intercept('POST', apiUrl).as('loginRequest');
         cy.get('button[type="submit"]').click();
         cy.get('button[type="submit"]').should('be.disabled');
         cy.wait('@loginRequest');
