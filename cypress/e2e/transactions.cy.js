@@ -2,7 +2,7 @@ import user from '../fixtures/user.json';
 
 describe('Transactions Section', () => {
     beforeEach(() => {
-        cy.visit('http://localhost:3000/');
+        cy.visit('https://tattoo-ui-three.vercel.app/auth/login');
         cy.login(user.username, user.password);
     });
 
