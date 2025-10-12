@@ -1,8 +1,8 @@
 import user from '../fixtures/user.json';
 
-describe('Transactions Home Section', () => {
+describe('Transactions Section', () => {
     beforeEach(() => {
-        cy.visit('https://tattoo-ui-three.vercel.app/auth/login');
+        cy.visit('http://localhost:3000/');
         cy.login(user.username, user.password);
     });
 
@@ -39,7 +39,7 @@ describe('Transactions Home Section', () => {
     it('Can open and close the add sale modal', () => {
         cy.get('[data-testid="add-sale-button"]').click();
         cy.get('[data-testid="cancel-add-sale-button"]').click();
-    })
+    });
 
     it('Should add a sale', () => {
         cy.get('[data-testid="add-sale-button"]').click();
@@ -80,14 +80,14 @@ describe('Transactions Home Section', () => {
 
     it('Should delete a sale', () => {
         cy.get('tbody > tr:nth-child(1) > td:nth-child(7) > button').click();
-        cy.get('[data-testid="delete-sale-title"]').should('exist');
+        cy.get('[data-testid="delete-modal-title"]').should('exist');
 
         // I can close the delete sale modal
-        cy.get('[data-testid="delete-sale-no-button"]').click();
+        cy.get('[data-testid="delete-modal-no-button"]').click();
 
         cy.get('tbody > tr:nth-child(1) > td:nth-child(7) > button').click();
-        cy.get('[data-testid="delete-sale-title"]').should('exist');
-        cy.get('[data-testid="delete-sale-yes-button"]').click();
+        cy.get('[data-testid="delete-modal-title"]').should('exist');
+        cy.get('[data-testid="delete-modal-yes-button"]').click();
 
         cy.contains('Robotino').should('not.exist');
     });
@@ -112,12 +112,12 @@ describe('Transactions Home Section', () => {
         });
     });
 
-   /*  it('Should filter by service correctly', () => {
+    it('Should filter by service correctly', () => {
         cy.get('[data-testid="filters-button"]').click();
 
         cy.get('#service').click({ force: true });
         cy.get('li').contains('Piercing').click({ force: true });
 
-        cy.get('td:nth-child(2)').should('contain.text', 'Piercing');
-    }); */
+        cy.get('td:nth-child(3)').should('contain.text', 'Piercing');
+    });
 });

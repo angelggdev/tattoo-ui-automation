@@ -18,4 +18,18 @@ describe('SideNav', () => {
         cy.get('[data-testid="sidenav-logout"]').click();
         cy.url().should('include', '/auth/login');
     })
+
+    it('Navigates to Sales section', () => {
+        cy.get('[data-testid="sidenav"]').trigger('mouseover');
+        cy.get('[data-testid="sidenav-sales"]').click();
+        cy.url().should('include', '/home/transactions');
+        cy.contains('Ventas').should('exist');
+    });
+
+    it('Navigates to Employees section', () => {
+        cy.get('[data-testid="sidenav"]').trigger('mouseover');
+        cy.get('[data-testid="sidenav-employees"]').click();
+        cy.url().should('include', '/home/employees');
+        cy.contains('Empleados').should('exist');
+    });
 });
