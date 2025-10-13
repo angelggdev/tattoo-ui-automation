@@ -42,8 +42,9 @@ describe('Transactions Section', () => {
     });
 
     it('Should add a sale', () => {
-        cy.get('[data-testid="add-sale-button"]').click();
         cy.intercept('GET', 'https://adicto-tattoo.onrender.com/api/employees').as('employeeRequest');
+
+        cy.get('[data-testid="add-sale-button"]').click();
 
         // Date field
         cy.get('button[aria-label="Choose date"]').eq(2).click();
@@ -78,33 +79,19 @@ describe('Transactions Section', () => {
         });
     });
 
-    it('Should delete a sale', () => {
-        cy.get('tbody > tr:nth-child(1) > td:nth-child(7) > button').click();
-        cy.get('[data-testid="delete-modal-title"]').should('exist');
-
-        // I can close the delete sale modal
-        cy.get('[data-testid="delete-modal-no-button"]').click();
-
-        cy.get('tbody > tr:nth-child(1) > td:nth-child(7) > button').click();
-        cy.get('[data-testid="delete-modal-title"]').should('exist');
-        cy.get('[data-testid="delete-modal-yes-button"]').click();
-
-        cy.contains('Robotino').should('not.exist');
-    });
-
     it('Should filter by date correctly', () => {
         cy.get('[data-testid="filters-button"]').click();
     });
 
     it('Should filter by employee correctly', () => {
-        cy.get('[data-testid="filters-button"]').click();
         cy.intercept('GET', 'https://adicto-tattoo.onrender.com/api/employees').as('employeeRequest');
+
+        cy.get('[data-testid="filters-button"]').click();
 
         cy.wait('@employeeRequest').then((employees) => {
             const employee = employees.response.body[0];
             const employeeFullName = `${employee.name} ${employee.lastname}`;
 
-            cy.intercept('GET', `https://adicto-tattoo.onrender.com/api/employees/${employee._id}/services`).as('serviceRequest');
             cy.get('#employee_id').click({ force: true });
             cy.get('li').contains(employeeFullName).click({ force: true });
 
@@ -119,5 +106,19 @@ describe('Transactions Section', () => {
         cy.get('li').contains('Piercing').click({ force: true });
 
         cy.get('td:nth-child(3)').should('contain.text', 'Piercing');
+    });
+
+    it('Should delete a sale', () => {
+        cy.get('tbody > tr:nth-child(1) > td:nth-child(7) > button').click();
+        cy.get('[data-testid="delete-modal-title"]').should('exist');
+
+        // I can close the delete sale modal
+        cy.get('[data-testid="delete-modal-no-button"]').click();
+
+        cy.get('tbody > tr:nth-child(1) > td:nth-child(7) > button').click();
+        cy.get('[data-testid="delete-modal-title"]').should('exist');
+        cy.get('[data-testid="delete-modal-yes-button"]').click();
+
+        cy.get('.MuiTableBody-root > :nth-child(1) > :nth-child(6)').contains('Robotino').should('not.exist');
     });
 });
