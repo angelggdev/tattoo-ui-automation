@@ -52,6 +52,8 @@ describe('Employees Section', () => {
 
         // Submit
         cy.get('[data-testid="add-employee-modal-button"]').click({ force: true });
+
+        cy.contains('Automation').should('exist');
     });
 
     it('Should delete an employee', () => {

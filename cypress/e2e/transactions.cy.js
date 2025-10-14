@@ -119,6 +119,6 @@ describe('Transactions Section', () => {
         cy.get('[data-testid="delete-modal-title"]').should('exist');
         cy.get('[data-testid="delete-modal-yes-button"]').click();
 
-        cy.get('.MuiTableBody-root > :nth-child(1) > :nth-child(6)').contains('Robotino').should('not.exist');
+        cy.contains('Robotino').should('not.exist');
     });
 });
