@@ -1,6 +1,8 @@
 import user from '../fixtures/user.json';
 
 describe('Transactions Section', () => {
+    let transactionId;
+
     beforeEach(() => {
         cy.visit('https://tattoo-ui-three.vercel.app/auth/login');
         cy.login(user.username, user.password);
@@ -73,8 +75,16 @@ describe('Transactions Section', () => {
                 cy.get('[data-testid="service-select"] > #service').click({ force: true });
                 cy.get('li').contains(service).click();
 
+                cy.intercept('POST', 'https://adicto-tattoo.onrender.com/api/transactions').as('transactionsPost');
+
                 // Submit
                 cy.get('[data-testid="add-sale-modal-button"]').click({ force: true });
+
+                cy.wait('@transactionsPost').then((res) => {
+                    cy.contains('Robotino').should('exist');
+                    cy.log(res);
+                    transactionId = res.response.body._id;
+                });
             });
         });
     });
@@ -103,9 +113,9 @@ describe('Transactions Section', () => {
         cy.get('[data-testid="filters-button"]').click();
 
         cy.get('#service').click({ force: true });
-        cy.get('li').contains('Piercing').click({ force: true });
+        cy.get('li').contains('Tattoo').click({ force: true });
 
-        cy.get('td:nth-child(3)').should('contain.text', 'Piercing');
+        cy.get('td:nth-child(3)').should('contain.text', 'Tattoo');
     });
 
     it('Should delete a sale', () => {
@@ -115,7 +125,7 @@ describe('Transactions Section', () => {
         // I can close the delete sale modal
         cy.get('[data-testid="delete-modal-no-button"]').click();
 
-        cy.get('tbody > tr:nth-child(1) > td:nth-child(7) > button').click();
+        cy.get(`[data-testid="remove-transaction-${transactionId}"]`).click();
         cy.get('[data-testid="delete-modal-title"]').should('exist');
         cy.get('[data-testid="delete-modal-yes-button"]').click();
 
