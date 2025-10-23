@@ -1,16 +1,15 @@
 import user from '../fixtures/user.json';
 
 describe('Employees Section', () => {
+    let employeeId;
+
     beforeEach(() => {
-        cy.visit('https://tattoo-ui-three.vercel.app/auth/login');
         cy.login(user.username, user.password);
-        cy.get('[data-testid="sidenav"]').trigger('mouseover');
-        cy.get('[data-testid="sidenav-employees"]').click();
-        cy.url().should('include', '/home/employees');
+        cy.visit('/home/employees');
     });
 
     it('Should see the table with all the columns', () => {
-        cy.intercept('GET', 'https://adicto-tattoo.onrender.com/api/employees').as('employeesRequest');
+        cy.intercept('GET', `${Cypress.env('apiUrl')}/employees`).as('employeesRequest');
 
         cy.get('h1').contains('Empleados').should('exist');
         cy.get('[data-testid="add-employee-button"]').should('exist');
@@ -50,20 +49,25 @@ describe('Employees Section', () => {
         cy.get('#services').click({ force: true });
         cy.get('li').contains('Tattoo').click();
 
+        cy.intercept('POST', `${Cypress.env('apiUrl')}/employees`).as('employeesPost');
+
         // Submit
         cy.get('[data-testid="add-employee-modal-button"]').click({ force: true });
 
-        cy.contains('Automation').should('exist');
+        cy.wait('@employeesPost').then((interception) => {
+            employeeId = interception.response.body._id;
+            cy.contains('Automation').should('exist');
+        });
     });
 
     it('Should delete an employee', () => {
-        cy.get(`[data-testid="action-delete-Automation"]`).click();
+        cy.get(`[data-testid="action-delete-${employeeId}"]`).click();
         cy.get('[data-testid="delete-modal-title"]').should('exist');
 
         // I can close the delete employee  modal
         cy.get('[data-testid="delete-modal-no-button"]').click();
 
-        cy.get('[data-testid="action-delete-Automation"]').click();
+        cy.get(`[data-testid="action-delete-${employeeId}"]`).click();
         cy.get('[data-testid="delete-modal-title"]').should('exist');
         cy.get('[data-testid="delete-modal-yes-button"]').click();
 

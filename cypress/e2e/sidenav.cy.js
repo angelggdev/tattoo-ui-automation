@@ -2,7 +2,6 @@ import user from '../fixtures/user.json';
 
 describe('SideNav', () => {
     beforeEach(() => {
-        cy.visit('https://tattoo-ui-three.vercel.app/auth/login');
         cy.login(user.username, user.password);
     });
 

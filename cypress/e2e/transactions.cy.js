@@ -4,12 +4,12 @@ describe('Transactions Section', () => {
     let transactionId;
 
     beforeEach(() => {
-        cy.visit('https://tattoo-ui-three.vercel.app/auth/login');
         cy.login(user.username, user.password);
+        cy.visit('/home/transactions');
     });
 
     it('Should see table with all the columns', () => {
-        cy.intercept('GET', 'https://adicto-tattoo.onrender.com/api/transactions').as('transactionsRequest');
+        cy.intercept('GET', `${Cypress.env('apiUrl')}/transactions`).as('transactionsRequest');
 
         cy.get('h1').contains('Ventas').should('exist');
         cy.get('[data-testid="add-sale-button"]').should('exist');
@@ -44,7 +44,7 @@ describe('Transactions Section', () => {
     });
 
     it('Should add a sale', () => {
-        cy.intercept('GET', 'https://adicto-tattoo.onrender.com/api/employees').as('employeeRequest');
+        cy.intercept('GET', `${Cypress.env('apiUrl')}/employees`).as('employeeRequest');
 
         cy.get('[data-testid="add-sale-button"]').click();
 
@@ -64,7 +64,7 @@ describe('Transactions Section', () => {
         // Employee field
         cy.wait('@employeeRequest').then((employees) => {
             const employee = employees.response.body[0];
-            cy.intercept('GET', `https://adicto-tattoo.onrender.com/api/employees/${employee._id}/services`).as('serviceRequest');
+            cy.intercept('GET', `${Cypress.env('apiUrl')}/employees/${employee._id}/services`).as('serviceRequest');
             cy.get('[data-testid="employee-select"] > #employee_id').click({ force: true });
             cy.get('li').contains(`${employee.name} ${employee.lastname}`).click({ force: true });
     
@@ -75,15 +75,14 @@ describe('Transactions Section', () => {
                 cy.get('[data-testid="service-select"] > #service').click({ force: true });
                 cy.get('li').contains(service).click();
 
-                cy.intercept('POST', 'https://adicto-tattoo.onrender.com/api/transactions').as('transactionsPost');
+                cy.intercept('POST', `${Cypress.env('apiUrl')}/transactions`).as('transactionsPost');
 
                 // Submit
                 cy.get('[data-testid="add-sale-modal-button"]').click({ force: true });
 
-                cy.wait('@transactionsPost').then((res) => {
+                cy.wait('@transactionsPost').then((interception) => {
                     cy.contains('Robotino').should('exist');
-                    cy.log(res);
-                    transactionId = res.response.body._id;
+                    transactionId = interception.response.body._id;
                 });
             });
         });
@@ -94,7 +93,7 @@ describe('Transactions Section', () => {
     });
 
     it('Should filter by employee correctly', () => {
-        cy.intercept('GET', 'https://adicto-tattoo.onrender.com/api/employees').as('employeeRequest');
+        cy.intercept('GET', `${Cypress.env('apiUrl')}/employees`).as('employeeRequest');
 
         cy.get('[data-testid="filters-button"]').click();
 

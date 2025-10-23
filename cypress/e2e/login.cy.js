@@ -1,10 +1,10 @@
 import user from '../fixtures/user.json';
 
-const apiUrl = 'https://adicto-tattoo.onrender.com/api/auth/login';
+const apiUrl = `${Cypress.env('apiUrl')}/auth/login`;
 
 describe('Login Flow', () => {
     beforeEach(() => {
-        cy.visit('https://tattoo-ui-three.vercel.app/auth/login');
+        cy.visit('/');
     });
 
     it('Login page renders correctly', () => {

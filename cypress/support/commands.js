@@ -25,12 +25,13 @@
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
 Cypress.Commands.add('login', (username, password) => {
-    cy.get('#username').type(username);
-    cy.get('#password').type(password);
-
-    cy.intercept('POST', 'https://adicto-tattoo.onrender.com/api/auth/login').as('loginRequest');
-    cy.get('button[type="submit"]').click();
-    cy.wait('@loginRequest');
-
-    cy.url().should('include', '/home');
+    cy.request('POST', `${Cypress.env('apiUrl')}/auth/login`, { username, password })
+        .then((response) => {
+            const { token } = response.body
+            cy.visit('/', {
+                onBeforeLoad(win) {
+                    win.localStorage.setItem('token', token)
+                },
+            })
+        })
 })
