@@ -67,10 +67,14 @@ describe('Employees Section', () => {
         // I can close the delete employee  modal
         cy.get('[data-testid="delete-modal-no-button"]').click();
 
+        cy.intercept('DELETE', `${Cypress.env('apiUrl')}/employees/${employeeId}`).as('employeesDelete');
+
         cy.get(`[data-testid="action-delete-${employeeId}"]`).click();
         cy.get('[data-testid="delete-modal-title"]').should('exist');
         cy.get('[data-testid="delete-modal-yes-button"]').click();
 
-        cy.contains('Automation').should('not.exist');
+        cy.wait('@employeesDelete').then(() => {
+            cy.contains('Automation').should('not.exist');
+        });
     });
 });

@@ -124,10 +124,14 @@ describe('Transactions Section', () => {
         // I can close the delete sale modal
         cy.get('[data-testid="delete-modal-no-button"]').click();
 
+        cy.intercept('DELETE', `${Cypress.env('apiUrl')}/transactions`).as('transactionsDelete');
+
         cy.get(`[data-testid="remove-transaction-${transactionId}"]`).click();
         cy.get('[data-testid="delete-modal-title"]').should('exist');
         cy.get('[data-testid="delete-modal-yes-button"]').click();
 
-        cy.contains('Robotino').should('not.exist');
+        cy.wait('@transactionsDelete').then(() => {
+            cy.contains('Robotino').should('not.exist');
+        });
     });
 });
